@@ -9,10 +9,16 @@ class PostsTableSeeder extends Seeder {
 	{
 		$faker = Faker::create();
 
-		foreach(range(1, 10) as $index)
+		Post::truncate();
+		
+		for ($i = 0; $i < 100; $i++)
 		{
-			Post::create([
+			$title = $faker->sentence(5);
 
+			Post::create([
+				'title'		=> $title,
+				'slug'		=> Str::slug($title),
+				'content'	=> $faker->paragraph(100)
 			]);
 		}
 	}
