@@ -31,6 +31,8 @@ class PostsController extends \BaseController {
 	 */
 	public function store()
 	{
+		
+
 		$validator = Validator::make($data = Input::all(), Post::$rules);
 
 		if ($validator->fails())
@@ -38,7 +40,12 @@ class PostsController extends \BaseController {
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 
-		Post::create($data);
+		//Post::create($data);
+		$post = new Post;
+		$post->title = Input::get('title');
+		$post->slug = Str::slug(Input::get('title'));
+		$post->content = Input::get('content');
+		$post->save();
 
 		return Redirect::route('posts.index');
 	}
@@ -62,9 +69,9 @@ class PostsController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function edit($slug)
 	{
-		$post = Post::find($id);
+		$post = Post::where('slug','=',$slug)->firstOrFail();
 
 		return View::make('posts.edit', compact('post'));
 	}
@@ -75,9 +82,9 @@ class PostsController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update($slug)
 	{
-		$post = Post::findOrFail($id);
+		$post = Post::where('slug','=',$slug)->firstOrFail();
 
 		$validator = Validator::make($data = Input::all(), Post::$rules);
 
@@ -97,11 +104,12 @@ class PostsController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy($slug)
 	{
+		$id = Post::where('slug','=',$slug)->firstOrFail()->id;
 		Post::destroy($id);
 
-		return Redirect::route('posts.index');
+		//return Redirect::route('posts.index');
 	}
 
 }
