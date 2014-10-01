@@ -1,12 +1,13 @@
 @extends('layouts.master')
 
-{{-- Header Area --}}
 @section('header')
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-	<div class="container">
-		<input class="form-control input-lg" type="text"></input>
+<div class="container-fluid">
+	<div class="row">
+		<div class="jumbotron">
+			Fathur Rohman
+		</div>
 	</div>
-</div> 
+</div>
 @stop
 
 @section('content')
@@ -17,12 +18,13 @@
 			@foreach ($posts as $post)
 			<li>
 				<h2>{{HTML::linkRoute('posts.show', $post->title, $post->slug)}}</h2>
-				<div class="col-md-12">{{$post->content}}</div>
+				<div class="col-md-12">{{substr($post->content, 0, 500)}}</div>
+				
+				@if (Sentry::check() )
 				<div class="col-md-12">
 					<div class="btn-group">
 					{{HTML::linkRoute('posts.create', 'Create', null, ['class'=>'btn btn-info btn-xs'])}}
 					{{HTML::linkRoute('posts.edit', 'Edit', $post->slug, ['class'=>'btn btn-warning btn-xs'])}}
-					{{-- HTML::linkRoute('posts.create', 'Delete', null, []) --}}
 					{{Form::button('Delete', [
 						'class'			=> 'btn btn-danger btn-xs delete', 
 						'data-slug'		=> $post->slug,
@@ -30,6 +32,7 @@
 					])}}
 					</div>
 				</div>
+				@endif
 			</li>
 			@endforeach
 			

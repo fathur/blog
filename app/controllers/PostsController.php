@@ -21,7 +21,14 @@ class PostsController extends \BaseController {
 	 */
 	public function create()
 	{
-		return View::make('posts.create');
+		if (Sentry::check()) {
+			
+			return View::make('posts.create');
+
+		} else {
+
+			return "404";
+		}
 	}
 
 	/**
@@ -31,23 +38,24 @@ class PostsController extends \BaseController {
 	 */
 	public function store()
 	{
-		
+		if (Sentry::check()) {
 
-		$validator = Validator::make($data = Input::all(), Post::$rules);
+			$validator = Validator::make($data = Input::all(), Post::$rules);
 
-		if ($validator->fails())
-		{
-			return Redirect::back()->withErrors($validator)->withInput();
+			if ($validator->fails())
+			{
+				return Redirect::back()->withErrors($validator)->withInput();
+			}
+
+			//Post::create($data);
+			$post = new Post;
+			$post->title = Input::get('title');
+			$post->slug = Str::slug(Input::get('title'));
+			$post->content = Input::get('content');
+			$post->save();
+
+			return Redirect::route('posts.index');
 		}
-
-		//Post::create($data);
-		$post = new Post;
-		$post->title = Input::get('title');
-		$post->slug = Str::slug(Input::get('title'));
-		$post->content = Input::get('content');
-		$post->save();
-
-		return Redirect::route('posts.index');
 	}
 
 	/**
@@ -71,9 +79,14 @@ class PostsController extends \BaseController {
 	 */
 	public function edit($slug)
 	{
-		$post = Post::where('slug','=',$slug)->firstOrFail();
+		if (Sentry::check()) {
+			
+			$post = Post::where('slug','=',$slug)->firstOrFail();
 
-		return View::make('posts.edit', compact('post'));
+			return View::make('posts.edit', compact('post'));
+		} else {
+			# code...
+		}
 	}
 
 	/**
@@ -84,18 +97,20 @@ class PostsController extends \BaseController {
 	 */
 	public function update($slug)
 	{
-		$post = Post::where('slug','=',$slug)->firstOrFail();
+		if (Sentry::check()) {
+			$post = Post::where('slug','=',$slug)->firstOrFail();
 
-		$validator = Validator::make($data = Input::all(), Post::$rules);
+			$validator = Validator::make($data = Input::all(), Post::$rules);
 
-		if ($validator->fails())
-		{
-			return Redirect::back()->withErrors($validator)->withInput();
+			if ($validator->fails())
+			{
+				return Redirect::back()->withErrors($validator)->withInput();
+			}
+
+			$post->update($data);
+
+			return Redirect::route('posts.index');
 		}
-
-		$post->update($data);
-
-		return Redirect::route('posts.index');
 	}
 
 	/**
@@ -106,9 +121,10 @@ class PostsController extends \BaseController {
 	 */
 	public function destroy($slug)
 	{
-		$id = Post::where('slug','=',$slug)->firstOrFail()->id;
-		Post::destroy($id);
-
+		if (Sentry::check()) {
+			$id = Post::where('slug','=',$slug)->firstOrFail()->id;
+			Post::destroy($id);
+		}
 		//return Redirect::route('posts.index');
 	}
 

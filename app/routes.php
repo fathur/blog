@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * -------------------------
+ * Extending Blade Template
+ * -------------------------
+ */
+
+/**
+ * In blade we write {? ... ?}
+ * and will returning tag <?php ... ?>
+ */
+Blade::extend(function ($value)
+{
+	return preg_replace('/\{\?(.+)\?\}/', '<?php ${1} ?>', $value);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -17,3 +32,5 @@
 });*/
  
 Route::resource('posts', 'PostsController');
+
+Route::controller('auth', 'AuthenticationController');
